@@ -32,7 +32,8 @@
 
 typedef struct	s_argv
 {
-	char *host;
+	char	*host;
+	int		sockfd;
 }				t_argv;
 
 // PARSING //
