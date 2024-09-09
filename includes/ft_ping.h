@@ -33,8 +33,15 @@
 typedef struct	s_argv
 {
 	char	*host;
+	char	*rhost;
 	int		sockfd;
 }				t_argv;
+
+typedef struct	s_ping
+{
+	char				*packet;
+	struct sockaddr_in	dest_addr;
+}				t_ping;
 
 // PARSING //
 
@@ -43,6 +50,7 @@ t_argv	parse_argv(int argc, char **argv);
 // UTILS //
 
 void	ft_exit_message(char *message, ...);
+char	*dns_lookup(char *addr);
 
 
 #endif

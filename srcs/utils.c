@@ -22,3 +22,21 @@ void	ft_exit_message(char *message, ...)
 	fprintf(stderr, "\n");
 	exit(1);
 }
+
+char	*dns_lookup(char *addr)
+{
+	struct hostent	*host;
+	struct in_addr	**addr_list;
+	int				i;
+
+	if ((host = gethostbyname(addr)) == NULL)
+		ft_exit_message("ft_ping: unknown host %s", addr);
+	addr_list = (struct in_addr **)host->h_addr_list;
+	i = 0;
+	while (addr_list[i] != NULL)
+	{
+		return (inet_ntoa(*addr_list[i]));
+		i++;
+	}
+	return (NULL);
+}

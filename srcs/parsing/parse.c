@@ -31,6 +31,7 @@ t_argv	parse_argv(int argc, char **argv)
 			av.host = argv[i];
 		i++;
 	}
-
+	av.rhost = dns_lookup(av.host);
+	
 	return (av);
 }
