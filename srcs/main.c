@@ -42,7 +42,7 @@ unsigned short in_cksum(unsigned short *addr, int len)
 	return (answer);
 }
 
-void receive_ping(t_argv av, int seq)
+void receive_ping(t_argv av)
 {
 	char buf[4096];
 	struct sockaddr_in src_addr;
@@ -50,69 +50,74 @@ void receive_ping(t_argv av, int seq)
 	struct ip *ip_header;
 	struct icmp *icmp_header;
 	int bytes_received;
+	int	payload_size;
 
 	bytes_received = recvfrom(av.sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&src_addr, &src_addr_len);
 	if (bytes_received < 0)
-		ft_exit_message("Error: Failed to receive icmp reply");
+		return ;
+		// ft_exit_message("Error: Failed to receive icmp reply");
 
 	ip_header = (struct ip *)buf;
 	icmp_header = (struct icmp *)(buf + (ip_header->ip_hl * 4));
-	printf("%d\n", icmp_header->icmp_cksum);
+
+	payload_size = bytes_received - (ip_header->ip_hl * 8);
 
 	if (icmp_header->icmp_type == ICMP_ECHOREPLY)
-	{
-		printf("%d bytes from %s: icmp_seq=%d\n", bytes_received, av.rhost, seq);
-		// printf("Received ICMP echo reply from %s\n", inet_ntoa(src_addr.sin_addr));
-		// printf("ICMP header:\n");
-		// printf("  Type: %d\n", icmp_header->icmp_type);
-		// printf("  Code: %d\n", icmp_header->icmp_code);
-		// printf("  ID: %d\n", icmp_header->icmp_id);
-		// printf("  Sequence: %d\n", icmp_header->icmp_seq);
-	}
+		printf("%d bytes from %s: icmp_seq=%d ttl=%d\n", payload_size, inet_ntoa(src_addr.sin_addr),
+														htons(icmp_header->icmp_seq), ip_header->ip_ttl);
+	else if (icmp_header->icmp_type == ICMP_TIME_EXCEEDED)
+		printf("%d bytes from %s: Time to live exceeded\n", payload_size, inet_ntoa(src_addr.sin_addr));
 }
 
-void setup_ping(t_argv av, t_ping *ping)
+void setup_ping(t_argv av, t_ping *ping, int seq)
 {
 	struct icmp *icmp_header;
 	int			packet_size;
 
-	packet_size = sizeof(struct icmp);
-	ping->packet = malloc(packet_size);
-	memset(ping->packet, 0, packet_size);
+	memset(ping, 0, sizeof(t_ping));
+
+	packet_size = av.payload_size + sizeof(struct icmp);
 
 	icmp_header = (struct icmp *)ping->packet;
 	icmp_header->icmp_type = ICMP_ECHO;
 	icmp_header->icmp_code = 0;
 	icmp_header->icmp_id = getpid();
-	icmp_header->icmp_seq = 0;
-	icmp_header->icmp_cksum = 0;
+	icmp_header->icmp_seq = htons(seq);
 
+	memset(ping->packet + sizeof(struct icmp), 0x42, av.payload_size);
+
+	icmp_header->icmp_cksum = 0;
 	icmp_header->icmp_cksum = in_cksum((unsigned short *)icmp_header, packet_size);
 
-	memset(&ping->dest_addr, 0, sizeof(struct sockaddr_in));
 	ping->dest_addr.sin_family = AF_INET;
 	ping->dest_addr.sin_addr.s_addr = inet_addr(av.rhost);
+	
+	setsockopt(av.sockfd, IPPROTO_IP, IP_TTL, &av.ttl, sizeof(av.ttl));
 
-	int	ttl_val = 5;
-	setsockopt(av.sockfd, IPPROTO_IP, IP_TTL, &ttl_val, sizeof(ttl_val));
+	struct timeval	tv_out;
+	tv_out.tv_sec = 1;
+	tv_out.tv_usec = 0;
+
+	setsockopt(av.sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
 }
 
-void	send_ping(t_argv av, t_ping ping)
+void	send_ping(t_argv av, int seq)
 {
-	if (sendto(av.sockfd, ping.packet, sizeof(struct icmp), 0, (struct sockaddr *)&ping.dest_addr, sizeof(ping.dest_addr)) < 0)
-	{
-		free(ping.packet);
+	t_ping	ping;
+	int		bytes;
+
+	setup_ping(av, &ping, seq);
+	bytes = sendto(av.sockfd, ping.packet, av.payload_size + sizeof(struct icmp), 0,
+					(struct sockaddr *)&ping.dest_addr, sizeof(ping.dest_addr));
+	if (bytes < 0)
 		ft_exit_message("Fatal Error: Couldn't send icmp packet");
-	}
 }
 
 void	ping(t_argv av)
 {
 	int		seq;
-	t_ping	ping;
 
-	setup_ping(av, &ping);
-	printf("PING %s (%s): (unknown data bytes)\n", av.host, av.rhost);
+	printf("PING %s (%s): %d data bytes\n", av.host, av.rhost, av.payload_size);
 	
 	seq = 0;
 	while (seq < 4)
@@ -120,8 +125,8 @@ void	ping(t_argv av)
 		if (seq != 0)
 			sleep(1);
 
-		send_ping(av, ping);
-		receive_ping(av, seq);
+		send_ping(av, seq);
+		receive_ping(av);
 
 		seq++;
 	}

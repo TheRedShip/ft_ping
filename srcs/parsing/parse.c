@@ -18,6 +18,8 @@ t_argv	parse_argv(int argc, char **argv)
 	t_argv	av;
 
 	av.host = NULL;
+	av.ttl = DEFAULT_TTL;
+	av.payload_size = DEFAULT_PAYLOAD_SIZE;
 
 	if (argc == 1)
 		ft_exit_message("Usage: %s [host]", argv[0]);
@@ -25,13 +27,15 @@ t_argv	parse_argv(int argc, char **argv)
 	i = 1;
 	while (i < argc)
 	{
-		if (ft_strncmp(argv[i], "-", 1) == 0)
-			continue ; //params
+		if (ft_strncmp(argv[i], "--ttl", 5) == 0)
+			av.ttl = ft_atoi(argv[i + 1]);
+		else if (ft_strncmp(argv[i], "-s", 2) == 0)
+			av.payload_size = ft_atoi(argv[i + 1]);
 		else if (av.host == NULL)
 			av.host = argv[i];
 		i++;
 	}
-	av.rhost = dns_lookup(av.host);
-	
+	av.rhost = ft_strdup(dns_lookup(av.host));
+
 	return (av);
 }

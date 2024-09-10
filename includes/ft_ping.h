@@ -30,8 +30,15 @@
 
 # include "libft.h"
 
+#define DEFAULT_TTL 64
+#define DEFAULT_PAYLOAD_SIZE 56
+#define MAX_PAYLOAD_SIZE 9999
+
 typedef struct	s_argv
 {
+	int		ttl;
+	int		payload_size;
+
 	char	*host;
 	char	*rhost;
 	int		sockfd;
@@ -39,7 +46,7 @@ typedef struct	s_argv
 
 typedef struct	s_ping
 {
-	char				*packet;
+	char				packet[MAX_PAYLOAD_SIZE];
 	struct sockaddr_in	dest_addr;
 }				t_ping;
 
