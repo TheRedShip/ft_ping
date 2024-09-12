@@ -40,3 +40,16 @@ char	*dns_lookup(char *addr)
 	}
 	return (NULL);
 }
+
+double	get_time(void)
+{
+	struct timespec	ts;
+
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return (ts.tv_sec * 1000.0) + (ts.tv_nsec / 1e6);
+
+	// struct timeval	tv;
+
+	// gettimeofday(&tv, NULL);
+	// return ((tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
+}

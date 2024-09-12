@@ -59,7 +59,7 @@ HEADERS		:=	includes/ft_ping.h
 
 CC          :=	clang
 
-CFLAGS      :=	-Wall -Wextra -Werror
+CFLAGS      :=	-g -Wall -Wextra -Werror
 
 IFLAGS	    :=	-I $(LFT_DIR)/includes -I ./includes
 

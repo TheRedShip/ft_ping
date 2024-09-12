@@ -42,55 +42,44 @@ unsigned short in_cksum(unsigned short *addr, int len)
 	return (answer);
 }
 
-void receive_ping(t_argv av)
+t_r_ping	receive_ping(t_argv av)
 {
 	char buf[4096];
-	struct sockaddr_in src_addr;
-	socklen_t src_addr_len = sizeof(src_addr);
-	struct ip *ip_header;
-	struct icmp *icmp_header;
-	int bytes_received;
-	int	payload_size;
+	socklen_t src_addr_len = sizeof(struct sockaddr_in);
+	t_r_ping	r_ping;
 
-	bytes_received = recvfrom(av.sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&src_addr, &src_addr_len);
-	if (bytes_received < 0)
-		return ;
-		// ft_exit_message("Error: Failed to receive icmp reply");
+	r_ping.bytes = recvfrom(av.sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&r_ping.src_addr, &src_addr_len);
+	if (r_ping.bytes < 0)
+		return (r_ping);
 
-	ip_header = (struct ip *)buf;
-	icmp_header = (struct icmp *)(buf + (ip_header->ip_hl * 4));
+	r_ping.ip_head = (struct ip *)buf;
+	r_ping.icmp_head = (struct icmp *)(buf + (r_ping.ip_head->ip_hl * 4));
 
-	payload_size = bytes_received - (ip_header->ip_hl * 8);
-
-	if (icmp_header->icmp_type == ICMP_ECHOREPLY)
-		printf("%d bytes from %s: icmp_seq=%d ttl=%d\n", payload_size, inet_ntoa(src_addr.sin_addr),
-														htons(icmp_header->icmp_seq), ip_header->ip_ttl);
-	else if (icmp_header->icmp_type == ICMP_TIME_EXCEEDED)
-		printf("%d bytes from %s: Time to live exceeded\n", payload_size, inet_ntoa(src_addr.sin_addr));
+	return (r_ping);
 }
 
-void setup_ping(t_argv av, t_ping *ping, int seq)
+void setup_ping(t_argv av, t_s_ping *s_ping, int seq)
 {
 	struct icmp *icmp_header;
 	int			packet_size;
 
-	memset(ping, 0, sizeof(t_ping));
+	memset(s_ping, 0, sizeof(t_s_ping));
 
 	packet_size = av.payload_size + sizeof(struct icmp);
 
-	icmp_header = (struct icmp *)ping->packet;
+	icmp_header = (struct icmp *)s_ping->packet;
 	icmp_header->icmp_type = ICMP_ECHO;
 	icmp_header->icmp_code = 0;
 	icmp_header->icmp_id = getpid();
 	icmp_header->icmp_seq = htons(seq);
 
-	memset(ping->packet + sizeof(struct icmp), 0x42, av.payload_size);
+	memset(s_ping->packet + sizeof(struct icmp), 0x42, av.payload_size);
 
 	icmp_header->icmp_cksum = 0;
 	icmp_header->icmp_cksum = in_cksum((unsigned short *)icmp_header, packet_size);
 
-	ping->dest_addr.sin_family = AF_INET;
-	ping->dest_addr.sin_addr.s_addr = inet_addr(av.rhost);
+	s_ping->dest_addr.sin_family = AF_INET;
+	s_ping->dest_addr.sin_addr.s_addr = inet_addr(av.rhost);
 	
 	setsockopt(av.sockfd, IPPROTO_IP, IP_TTL, &av.ttl, sizeof(av.ttl));
 
@@ -103,31 +92,51 @@ void setup_ping(t_argv av, t_ping *ping, int seq)
 
 void	send_ping(t_argv av, int seq)
 {
-	t_ping	ping;
-	int		bytes;
+	int			bytes;
+	t_s_ping	s_ping;
 
-	setup_ping(av, &ping, seq);
-	bytes = sendto(av.sockfd, ping.packet, av.payload_size + sizeof(struct icmp), 0,
-					(struct sockaddr *)&ping.dest_addr, sizeof(ping.dest_addr));
+	setup_ping(av, &s_ping, seq);
+	bytes = sendto(av.sockfd, s_ping.packet, av.payload_size + sizeof(struct icmp), 0,
+					(struct sockaddr *)&s_ping.dest_addr, sizeof(s_ping.dest_addr));
 	if (bytes < 0)
 		ft_exit_message("Fatal Error: Couldn't send icmp packet");
 }
 
+void	show_response(t_r_ping r_ping, double time)
+{
+	int	payload_size;
+
+	payload_size = r_ping.bytes - (r_ping.ip_head->ip_hl * 8);
+	if (r_ping.icmp_head->icmp_type == ICMP_ECHOREPLY)
+		printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%0.3f ms\n", payload_size, inet_ntoa(r_ping.src_addr.sin_addr),
+														htons(r_ping.icmp_head->icmp_seq), r_ping.ip_head->ip_ttl,
+														time);
+	else if (r_ping.icmp_head->icmp_type == ICMP_TIME_EXCEEDED)
+		printf("%d bytes from %s: Time to live exceeded\n", payload_size, inet_ntoa(r_ping.src_addr.sin_addr));
+}
+
 void	ping(t_argv av)
 {
-	int		seq;
+	int				seq;
+	double			s_time;
+	double			e_time;
+	t_r_ping		r_ping;
 
 	printf("PING %s (%s): %d data bytes\n", av.host, av.rhost, av.payload_size);
 	
 	seq = 0;
-	while (seq < 4)
+	while (42)
 	{
 		if (seq != 0)
 			sleep(1);
-
+		
+		s_time = get_time();
 		send_ping(av, seq);
-		receive_ping(av);
 
+		r_ping = receive_ping(av);
+		e_time = get_time();
+		
+		show_response(r_ping, e_time - s_time);
 		seq++;
 	}
 }
