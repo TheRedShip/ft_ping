@@ -45,10 +45,15 @@ SRCS_DIR	:=	srcs
 
 OBJS_DIR	:=	.objs
 
-SRCS_PARSE	:=	parsing/parse.c \
+SRCS_SOCK	:=	socket/socket_utils.c		\
+				socket/send.c				\
+				socket/recv.c				\
 
-ALL_SRCS	:=	$(SRCS_PARSE)			\
-				main.c utils.c
+SRCS_STATS	:=	stats/stats.c				\
+				stats/print.c				\
+
+ALL_SRCS	:=	$(SRCS_SOCK) $(SRCS_STATS)	\
+				main.c utils.c parse.c		\
 
 SRCS		:=	$(ALL_SRCS:%=$(SRCS_DIR)/%)
 

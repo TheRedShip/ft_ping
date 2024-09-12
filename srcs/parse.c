@@ -17,7 +17,7 @@ t_argv	parse_argv(int argc, char **argv)
 	int		i;
 	t_argv	av;
 
-	av.host = NULL;
+	av.count = 0;
 	av.ttl = DEFAULT_TTL;
 	av.payload_size = DEFAULT_PAYLOAD_SIZE;
 
@@ -31,11 +31,10 @@ t_argv	parse_argv(int argc, char **argv)
 			av.ttl = ft_atoi(argv[i + 1]);
 		else if (ft_strncmp(argv[i], "-s", 2) == 0)
 			av.payload_size = ft_atoi(argv[i + 1]);
-		else if (av.host == NULL)
-			av.host = argv[i];
+		else if (ft_strncmp(argv[i], "-c", 2) == 0)
+			av.count = ft_atoi(argv[i + 1]);
 		i++;
 	}
-	av.rhost = ft_strdup(dns_lookup(av.host));
 
 	return (av);
 }

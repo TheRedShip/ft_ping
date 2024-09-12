@@ -34,29 +34,30 @@
 #define DEFAULT_PAYLOAD_SIZE 56
 #define MAX_PAYLOAD_SIZE 9999
 
+typedef struct	s_argv
+{
+	int		ttl;
+	int		count;
+	int		payload_size;
+}				t_argv;
+
 typedef struct	s_host
 {
 	char	*host;
 	char	*rhost;
-
-
-	struct s_host *next;
+	int		sockfd;
 }				t_host;
 
 typedef struct	s_stats
 {
-	
-}
-
-typedef struct	s_argv
-{
-	int		ttl;
-	int		payload_size;
-
-	char	*host;
-	char	*rhost;
-	int		sockfd;
-}				t_argv;
+	int		sent;
+	int		recv;
+	int		lost;
+	double	mdev;
+	double	min;
+	double	max;
+	double	avg;
+}				t_stats;
 
 typedef struct	s_s_ping
 {
@@ -72,17 +73,31 @@ typedef struct	s_r_ping
 	struct sockaddr_in	src_addr;
 }				t_r_ping;
 
-
-
 // PARSING //
 
-t_argv	parse_argv(int argc, char **argv);
+t_argv			parse_argv(int argc, char **argv);
+
+
+// SOCKETS //
+
+void			send_ping(t_host host, t_argv av, int seq);
+
+t_r_ping		receive_ping(t_host host);
+
+unsigned short	in_cksum(unsigned short *addr, int len);
+char			*dns_lookup(char *addr);
 
 // UTILS //
 
-void	ft_exit_message(char *message, ...);
-char	*dns_lookup(char *addr);
-double	get_time(void);
+void			ft_exit_message(char *message, ...);
+double			get_time(void);
 
+// STATS //
+
+void			show_response(t_r_ping r_ping, double time);
+void			show_stats(t_host host, t_stats stats);
+
+void			update_stats(t_r_ping r_ping, double c_time, t_stats *stats);
+void			init_stats(t_stats *stats);
 
 #endif

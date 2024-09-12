@@ -1,32 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   recv.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: TheRed <TheRed@students.42.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/05 20:03:36 by TheRed            #+#    #+#             */
-/*   Updated: 2024/09/05 20:03:36 by TheRed           ###   ########.fr       */
+/*   Created: 2024/09/13 01:14:41 by TheRed            #+#    #+#             */
+/*   Updated: 2024/09/13 01:14:41 by TheRed           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
 
-void	ft_exit_message(char *message, ...)
+t_r_ping	receive_ping(t_host host)
 {
-	va_list	args;
+	char buf[4096];
+	socklen_t src_addr_len = sizeof(struct sockaddr_in);
+	t_r_ping	r_ping;
 
-	va_start(args, message);
-	vfprintf(stderr, message, args);
-	va_end(args);
-	fprintf(stderr, "\n");
-	exit(1);
-}
+	r_ping.bytes = recvfrom(host.sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&r_ping.src_addr, &src_addr_len);
+	if (r_ping.bytes < 0)
+		return (r_ping);
 
-double	get_time(void)
-{
-	struct timespec	ts;
+	r_ping.ip_head = (struct ip *)buf;
+	r_ping.icmp_head = (struct icmp *)(buf + (r_ping.ip_head->ip_hl * 4));
 
-	clock_gettime(CLOCK_MONOTONIC, &ts);
-	return (ts.tv_sec * 1000.0) + (ts.tv_nsec / 1e6);
+	return (r_ping);
 }
