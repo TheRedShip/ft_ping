@@ -37,5 +37,5 @@ void	show_stats(t_host host, t_stats stats)
 		return ;
 	
 	printf("round-trip min/avg/max/stddev = %0.3f/%0.3f/%0.3f/%0.3f ms\n\n",
-			stats.min, stats.avg / stats.sent, stats.max, 0.0);
+			stats.min, stats.avg / stats.sent, stats.max, calculate_standard_deviation(stats));
 }

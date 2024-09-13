@@ -27,6 +27,7 @@
 # include <sys/time.h>
 # include <time.h>
 # include <signal.h>
+# include <math.h> 
 
 # include "libft.h"
 
@@ -97,7 +98,8 @@ double			get_time(void);
 void			show_response(t_r_ping r_ping, double time);
 void			show_stats(t_host host, t_stats stats);
 
-void			update_stats(t_r_ping r_ping, double c_time, t_stats *stats);
 void			init_stats(t_stats *stats);
+void			update_stats(t_r_ping r_ping, double c_time, t_stats *stats);
+double			calculate_standard_deviation(t_stats stats);
 
 #endif

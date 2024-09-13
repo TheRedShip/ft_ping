@@ -82,7 +82,7 @@ all: $(NAME)
 bonus: all
 
 $(NAME): $(LFT) $(OBJS) $(HEADERS)
-	@$(CC) $(CFLAGS) $(IFLAGS) $(OBJS) $(LFT_DIR)/libft.a -o $(NAME)
+	@$(CC) $(CFLAGS) $(IFLAGS) $(OBJS) $(LFT_DIR)/libft.a -lm -o $(NAME)
 	@printf "$(LINE_CLR)$(BWHITE) $(NAME): PROJECT COMPILED !$(RESET)\n\n"
 
 $(LFT):

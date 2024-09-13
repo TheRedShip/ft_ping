@@ -8,6 +8,7 @@
 		"signal.h": "c",
 		"time.h": "c",
 		"fcntl.h": "c",
-		"types.h": "c"
+		"types.h": "c",
+		"string.h": "c"
 	}
 }
