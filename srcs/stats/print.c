@@ -33,9 +33,8 @@ void	show_stats(t_host host, t_stats stats)
 	printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
 			stats.sent, stats.recv, 100 - (100 * stats.recv / stats.sent));
 	
-	if (stats.recv == 0)
-		return ;
-	
-	printf("round-trip min/avg/max/stddev = %0.3f/%0.3f/%0.3f/%0.3f ms\n\n",
-			stats.min, stats.avg / stats.sent, stats.max, calculate_standard_deviation(stats));
+	if (stats.recv != 0)
+		printf("round-trip min/avg/max/stddev = %0.3f/%0.3f/%0.3f/%0.3f ms\n",
+				stats.min, stats.avg / stats.sent, stats.max, calculate_standard_deviation(stats));
+	printf("\n");	
 }
