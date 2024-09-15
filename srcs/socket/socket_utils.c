@@ -24,7 +24,7 @@ char			*dns_lookup(char *addr)
 	i = 0;
 	while (addr_list[i] != NULL)
 	{
-		return (inet_ntoa(*addr_list[i]));
+		return (ft_strdup(inet_ntoa(*addr_list[i])));
 		i++;
 	}
 	return (NULL);

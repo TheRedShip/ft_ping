@@ -17,9 +17,11 @@ t_argv	parse_argv(int argc, char **argv)
 	int		i;
 	t_argv	av;
 
-	av.count = 0;
 	av.ttl = DEFAULT_TTL;
+	av.wait = 10;
+	av.count = 0;
 	av.payload_size = DEFAULT_PAYLOAD_SIZE;
+	av.force = false;
 
 	if (argc == 1)
 		ft_exit_message("Usage: %s [host]", argv[0]);
@@ -33,6 +35,10 @@ t_argv	parse_argv(int argc, char **argv)
 			av.payload_size = ft_atoi(argv[i + 1]);
 		else if (ft_strncmp(argv[i], "-c", 2) == 0)
 			av.count = ft_atoi(argv[i + 1]);
+		else if (ft_strncmp(argv[i], "-W", 2) == 0)
+			av.wait = ft_atoi(argv[i + 1]);
+		else if (ft_strncmp(argv[i], "-f", 2) == 0)
+			av.force = true;
 		i++;
 	}
 

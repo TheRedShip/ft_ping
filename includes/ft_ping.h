@@ -38,8 +38,10 @@
 typedef struct	s_argv
 {
 	int		ttl;
+	int		wait;
 	int		count;
 	int		payload_size;
+	bool	force;
 }				t_argv;
 
 typedef struct	s_host
@@ -84,6 +86,7 @@ t_argv			parse_argv(int argc, char **argv);
 void			send_ping(t_host host, t_argv av, int seq);
 
 t_r_ping		receive_ping(t_host host);
+t_r_ping		receive_ping_force(t_host host);
 
 unsigned short	in_cksum(unsigned short *addr, int len);
 char			*dns_lookup(char *addr);

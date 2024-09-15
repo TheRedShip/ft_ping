@@ -38,7 +38,7 @@ void	setup_ping(t_s_ping *s_ping, t_host host, t_argv av, int seq)
 	setsockopt(host.sockfd, IPPROTO_IP, IP_TTL, &av.ttl, sizeof(av.ttl));
 
 	struct timeval	tv_out;
-	tv_out.tv_sec = 1;
+	tv_out.tv_sec = av.wait;
 	tv_out.tv_usec = 0;
 
 	setsockopt(host.sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
