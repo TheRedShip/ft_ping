@@ -12,10 +12,12 @@
 
 #include "ft_ping.h"
 
+bool	interrupted = false;
+
 void int_handler(int sig)
 {
 	(void) sig;
-	ft_exit_message("Catching signal.. Exiting");
+	interrupted = true;
 }
 
 void	ping(t_host host, t_argv av)
@@ -26,18 +28,26 @@ void	ping(t_host host, t_argv av)
 	double			c_time;
 	t_r_ping		r_ping;
 
-	init_stats(&stats);
-	
 	printf("PING %s (%s): %d data bytes\n", host.host, host.rhost, av.payload_size);
+	init_stats(&stats);
 
 	seq = 0;
-	while (seq < av.count || av.count == 0)
+	do
 	{
-		if (!av.force)
-			sleep(1);
+		if (!av.force && seq && !av.preload)
+			sleep(av.interval);
+
+		if (av.preload > 0)
+			av.preload--;
 		
 		s_time = get_time();
 		send_ping(host, av, seq);
+
+		if (interrupted)
+		{
+			stats.sent++;
+			break;
+		}
 
 		r_ping = receive_ping(host);
 		c_time = get_time() - s_time;
@@ -47,22 +57,9 @@ void	ping(t_host host, t_argv av)
 		update_stats(r_ping, c_time, &stats);
 		seq++;
 	}
-	show_stats(host, stats);
-}
+	while (!interrupted && (seq < av.count || av.count == 0));
 
-bool	is_param_value(char *param)
-{
-	if (ft_strncmp(param, "--ttl", 5) == 0)
-		return (true);
-	if (ft_strncmp(param, "-s", 2) == 0)
-		return (true);
-	if (ft_strncmp(param, "-c", 2) == 0)
-		return (true);
-	if (ft_strncmp(param, "-W", 2) == 0)
-		return (true);
-	if (ft_strncmp(param, "-f", 2) == 0)
-		return (false);
-	return (false);
+	show_stats(host, stats);
 }
 
 int main(int argc, char **argv)

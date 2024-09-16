@@ -18,7 +18,9 @@ t_argv	parse_argv(int argc, char **argv)
 	t_argv	av;
 
 	av.ttl = DEFAULT_TTL;
-	av.wait = 10;
+	av.wait = DEFAULT_WAIT;
+	av.preload = DEFAULT_PRELOAD;
+	av.interval = DEFAULT_INTERVAL;
 	av.count = 0;
 	av.payload_size = DEFAULT_PAYLOAD_SIZE;
 	av.force = false;
@@ -37,6 +39,10 @@ t_argv	parse_argv(int argc, char **argv)
 			av.count = ft_atoi(argv[i + 1]);
 		else if (ft_strncmp(argv[i], "-W", 2) == 0)
 			av.wait = ft_atoi(argv[i + 1]);
+		else if (ft_strncmp(argv[i], "-i", 2) == 0)
+			av.interval = ft_atoi(argv[i + 1]);
+		else if (ft_strncmp(argv[i], "-l", 2) == 0)
+			av.preload = ft_atoi(argv[i + 1]);
 		else if (ft_strncmp(argv[i], "-f", 2) == 0)
 			av.force = true;
 		i++;

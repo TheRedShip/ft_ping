@@ -41,6 +41,11 @@ void	setup_ping(t_s_ping *s_ping, t_host host, t_argv av, int seq)
 	tv_out.tv_sec = av.wait;
 	tv_out.tv_usec = 0;
 
+	if (av.force)
+	{
+		tv_out.tv_sec = 0;
+		tv_out.tv_usec = 1000 * 100;
+	}
 	setsockopt(host.sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
 }
 

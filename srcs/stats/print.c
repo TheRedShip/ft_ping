@@ -18,11 +18,10 @@ void	show_response(t_r_ping r_ping, double time)
 
 	if (r_ping.bytes < 0)
 		return ;
-	payload_size = r_ping.bytes - (r_ping.ip_head->ip_hl * 8);
+	payload_size = r_ping.bytes - (r_ping.ip_head->ip_hl * 4);
 	if (r_ping.icmp_head->icmp_type == ICMP_ECHOREPLY)
 		printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%0.3f ms\n", payload_size, inet_ntoa(r_ping.src_addr.sin_addr),
-														htons(r_ping.icmp_head->icmp_seq), r_ping.ip_head->ip_ttl,
-														time);
+														htons(r_ping.icmp_head->icmp_seq), r_ping.ip_head->ip_ttl, time);
 	else if (r_ping.icmp_head->icmp_type == ICMP_TIME_EXCEEDED)
 		printf("%d bytes from %s: Time to live exceeded\n", payload_size, inet_ntoa(r_ping.src_addr.sin_addr));
 }
@@ -35,6 +34,6 @@ void	show_stats(t_host host, t_stats stats)
 	
 	if (stats.recv != 0)
 		printf("round-trip min/avg/max/stddev = %0.3f/%0.3f/%0.3f/%0.3f ms\n",
-				stats.min, stats.avg / stats.sent, stats.max, calculate_standard_deviation(stats));
+				stats.min, stats.avg / stats.recv, stats.max, calculate_standard_deviation(stats));
 	printf("\n");	
 }

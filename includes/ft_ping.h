@@ -31,15 +31,22 @@
 
 # include "libft.h"
 
-#define DEFAULT_TTL 64
-#define DEFAULT_PAYLOAD_SIZE 56
-#define MAX_PAYLOAD_SIZE 9999
+# define DEFAULT_TTL 64
+# define DEFAULT_WAIT 10
+# define DEFAULT_PRELOAD 0
+# define DEFAULT_INTERVAL 1
+# define DEFAULT_PAYLOAD_SIZE 56
+# define MAX_PAYLOAD_SIZE 9999
+
+// extern bool	interrupted;
 
 typedef struct	s_argv
 {
 	int		ttl;
 	int		wait;
 	int		count;
+	int		preload;
+	int		interval;
 	int		payload_size;
 	bool	force;
 }				t_argv;
@@ -95,6 +102,7 @@ char			*dns_lookup(char *addr);
 
 void			ft_exit_message(char *message, ...);
 double			get_time(void);
+bool			is_param_value(char *param);
 
 // STATS //
 

@@ -30,3 +30,22 @@ double	get_time(void)
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return (ts.tv_sec * 1000.0) + (ts.tv_nsec / 1e6);
 }
+
+bool	is_param_value(char *param)
+{
+	if (ft_strncmp(param, "--ttl", 5) == 0)
+		return (true);
+	if (ft_strncmp(param, "-s", 2) == 0)
+		return (true);
+	if (ft_strncmp(param, "-c", 2) == 0)
+		return (true);
+	if (ft_strncmp(param, "-W", 2) == 0)
+		return (true);
+	if (ft_strncmp(param, "-i", 2) == 0)
+		return (true);
+	if (ft_strncmp(param, "-l", 2) == 0)
+		return (true);
+	if (ft_strncmp(param, "-f", 2) == 0)
+		return (false);
+	return (false);
+}
