@@ -36,6 +36,8 @@ void	ping(t_host host, t_argv av)
 	{
 		if (!av.force && seq && !av.preload)
 			sleep(av.interval);
+		else
+			usleep(1000 * 3);
 
 		if (av.preload > 0)
 			av.preload--;
@@ -43,17 +45,15 @@ void	ping(t_host host, t_argv av)
 		s_time = get_time();
 		send_ping(host, av, seq);
 
+		stats.sent++;
 		if (interrupted)
-		{
-			stats.sent++;
 			break;
-		}
 
 		r_ping = receive_ping(host);
 		c_time = get_time() - s_time;
 		
 		if (!av.force)
-			show_response(r_ping, c_time);
+			show_response(av, r_ping, c_time);
 		update_stats(r_ping, c_time, &stats);
 		seq++;
 	}
@@ -72,8 +72,8 @@ int main(int argc, char **argv)
 	
 	av = parse_argv(argc, argv);
 	
-	i = 0;
-	while (argv[++i])
+	i = 1;
+	while (i < argc)
 	{
 		if (argv[i][0] != '-')
 		{
@@ -85,9 +85,11 @@ int main(int argc, char **argv)
 				ft_exit_message("Fatal Error: Socket could not create (are you root ?)");
 			
 			ping(host, av);
+			free(host.rhost);
 		}
 		else if (is_param_value(argv[i]))
 			i++;
+		i++;
 	}
 	return (0);
 }

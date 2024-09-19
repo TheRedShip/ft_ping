@@ -12,18 +12,32 @@
 
 #include "ft_ping.h"
 
-void	show_response(t_r_ping r_ping, double time)
+void	show_response(t_argv av, t_r_ping r_ping, double time)
 {
-	int	payload_size;
+	char	*host;
+	char	*reverse_host;
+	int		payload_size;
 
 	if (r_ping.bytes < 0)
 		return ;
+
 	payload_size = r_ping.bytes - (r_ping.ip_head->ip_hl * 4);
 	if (r_ping.icmp_head->icmp_type == ICMP_ECHOREPLY)
 		printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%0.3f ms\n", payload_size, inet_ntoa(r_ping.src_addr.sin_addr),
 														htons(r_ping.icmp_head->icmp_seq), r_ping.ip_head->ip_ttl, time);
 	else if (r_ping.icmp_head->icmp_type == ICMP_TIME_EXCEEDED)
-		printf("%d bytes from %s: Time to live exceeded\n", payload_size, inet_ntoa(r_ping.src_addr.sin_addr));
+	{
+		host = inet_ntoa(r_ping.src_addr.sin_addr);
+
+		if (av.reverse_dns)
+		{
+			reverse_host = reverse_dns_lookup(host);
+			printf("%d bytes from %s (%s): Time to live exceeded\n", payload_size, reverse_host, host);
+			free(reverse_host);
+		}
+		else
+			printf("%d bytes from %s: Time to live exceeded\n", payload_size, host);
+	}
 }
 
 void	show_stats(t_host host, t_stats stats)

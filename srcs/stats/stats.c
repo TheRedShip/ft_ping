@@ -47,7 +47,6 @@ void	update_stats(t_r_ping r_ping, double c_time, t_stats *stats)
 	if (stats->sent == 0)
 		mean = 0;
 
-	stats->sent++;
 	if (r_ping.bytes < 0 || r_ping.icmp_head->icmp_type == ICMP_TIME_EXCEEDED)
 	{
 		stats->lost++;

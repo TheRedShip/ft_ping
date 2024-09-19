@@ -49,6 +49,7 @@ typedef struct	s_argv
 	int		interval;
 	int		payload_size;
 	bool	force;
+	bool	reverse_dns;
 }				t_argv;
 
 typedef struct	s_host
@@ -97,6 +98,7 @@ t_r_ping		receive_ping_force(t_host host);
 
 unsigned short	in_cksum(unsigned short *addr, int len);
 char			*dns_lookup(char *addr);
+char			*reverse_dns_lookup(char *ip_addr);
 
 // UTILS //
 
@@ -106,7 +108,7 @@ bool			is_param_value(char *param);
 
 // STATS //
 
-void			show_response(t_r_ping r_ping, double time);
+void			show_response(t_argv av, t_r_ping r_ping, double time);
 void			show_stats(t_host host, t_stats stats);
 
 void			init_stats(t_stats *stats);

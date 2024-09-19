@@ -47,5 +47,7 @@ bool	is_param_value(char *param)
 		return (true);
 	if (ft_strncmp(param, "-f", 2) == 0)
 		return (false);
+	if (ft_strncmp(param, "-n", 2) == 0)
+		return (false);
 	return (false);
 }

@@ -30,6 +30,26 @@ char			*dns_lookup(char *addr)
 	return (NULL);
 }
 
+char *reverse_dns_lookup(char *ip_addr)
+{
+    struct sockaddr_in sa;
+    char host[NI_MAXHOST];
+    int res;
+
+    memset(&sa, 0, sizeof(struct sockaddr_in));
+    sa.sin_family = AF_INET;
+    
+    if (inet_pton(AF_INET, ip_addr, &(sa.sin_addr)) != 1)
+        ft_exit_message("ft_ping: invalid IP address %s", ip_addr);
+
+    res = getnameinfo((struct sockaddr *)&sa, sizeof(struct sockaddr_in),
+                      host, NI_MAXHOST, NULL, 0, NI_NAMEREQD);
+
+    if (res != 0)
+        return (ft_strdup(ip_addr));
+    return (ft_strdup(host));
+}
+
 unsigned short	in_cksum(unsigned short *addr, int len)
 {
 	int nleft = len;
