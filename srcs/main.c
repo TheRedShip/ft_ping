@@ -27,6 +27,7 @@ void	ping(t_host host, t_argv av)
 	double			s_time;
 	double			c_time;
 	t_r_ping		r_ping;
+	int				response_code;
 
 	printf("PING %s (%s): %d data bytes\n", host.host, host.rhost, av.payload_size);
 	init_stats(&stats);
@@ -51,10 +52,13 @@ void	ping(t_host host, t_argv av)
 
 		r_ping = receive_ping(host);
 		c_time = get_time() - s_time;
+
+		response_code = r_ping.icmp_head->icmp_type;
 		
 		if (!av.force)
 			show_response(av, r_ping, c_time);
-		update_stats(r_ping, c_time, &stats);
+
+		update_stats(r_ping.bytes, response_code, c_time, &stats);
 		seq++;
 	}
 	while (!interrupted && (seq < av.count || av.count == 0));
@@ -83,6 +87,8 @@ int main(int argc, char **argv)
 			
 			if (host.sockfd < 0)
 				ft_exit_message("Fatal Error: Socket could not create (are you root ?)");
+
+			set_option(av, host.sockfd);
 			
 			ping(host, av);
 			free(host.rhost);

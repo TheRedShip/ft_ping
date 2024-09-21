@@ -48,6 +48,7 @@ OBJS_DIR	:=	.objs
 SRCS_SOCK	:=	socket/socket_utils.c		\
 				socket/send.c				\
 				socket/recv.c				\
+				socket/option.c				\
 
 SRCS_STATS	:=	stats/stats.c				\
 				stats/print.c				\

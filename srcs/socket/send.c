@@ -34,29 +34,14 @@ void	setup_ping(t_s_ping *s_ping, t_host host, t_argv av, int seq)
 
 	s_ping->dest_addr.sin_family = AF_INET;
 	s_ping->dest_addr.sin_addr.s_addr = inet_addr(host.rhost);
-	
-	setsockopt(host.sockfd, IPPROTO_IP, IP_TTL, &av.ttl, sizeof(av.ttl));
-
-	struct timeval	tv_out;
-	tv_out.tv_sec = av.wait;
-	tv_out.tv_usec = 0;
-
-	if (av.force)
-	{
-		tv_out.tv_sec = 0;
-		tv_out.tv_usec = 1000 * 100;
-	}
-	setsockopt(host.sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
 }
 
 void	send_ping(t_host host, t_argv av, int seq)
 {
-	int			bytes;
 	t_s_ping	s_ping;
 
 	setup_ping(&s_ping, host, av, seq);
-	bytes = sendto(host.sockfd, s_ping.packet, av.payload_size + sizeof(struct icmp), 0,
-					(struct sockaddr *)&s_ping.dest_addr, sizeof(s_ping.dest_addr));
-	if (bytes < 0)
-		ft_exit_message("Fatal Error: Couldn't send icmp packet");
+	if (sendto(host.sockfd, s_ping.packet, av.payload_size + sizeof(struct icmp), 0,
+					(struct sockaddr *)&s_ping.dest_addr, sizeof(s_ping.dest_addr)) < 0)
+		ft_exit_message("ft_ping: sending packet: %s\n", strerror(errno));
 }

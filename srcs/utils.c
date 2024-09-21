@@ -45,9 +45,9 @@ bool	is_param_value(char *param)
 		return (true);
 	if (ft_strncmp(param, "-l", 2) == 0)
 		return (true);
-	if (ft_strncmp(param, "-f", 2) == 0)
-		return (false);
-	if (ft_strncmp(param, "-n", 2) == 0)
-		return (false);
+	if (ft_strncmp(param, "-T", 2) == 0)
+		return (true);
+	if (ft_strncmp(param, "--ip-timestamp", 14) == 0)
+		return (true);
 	return (false);
 }

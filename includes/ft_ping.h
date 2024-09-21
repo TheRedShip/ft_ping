@@ -27,7 +27,8 @@
 # include <sys/time.h>
 # include <time.h>
 # include <signal.h>
-# include <math.h> 
+# include <math.h>
+# include <errno.h>
 
 # include "libft.h"
 
@@ -42,13 +43,16 @@
 
 typedef struct	s_argv
 {
+	int		tos;
 	int		ttl;
 	int		wait;
 	int		count;
 	int		preload;
 	int		interval;
 	int		payload_size;
+	int		ip_timestamp;
 	bool	force;
+	bool	no_route;
 	bool	reverse_dns;
 }				t_argv;
 
@@ -91,10 +95,10 @@ t_argv			parse_argv(int argc, char **argv);
 
 // SOCKETS //
 
+void			set_option(t_argv av, int sockfd);
 void			send_ping(t_host host, t_argv av, int seq);
 
 t_r_ping		receive_ping(t_host host);
-t_r_ping		receive_ping_force(t_host host);
 
 unsigned short	in_cksum(unsigned short *addr, int len);
 char			*dns_lookup(char *addr);
@@ -112,7 +116,7 @@ void			show_response(t_argv av, t_r_ping r_ping, double time);
 void			show_stats(t_host host, t_stats stats);
 
 void			init_stats(t_stats *stats);
-void			update_stats(t_r_ping r_ping, double c_time, t_stats *stats);
+void			update_stats(int r_bytes, int response_code, double c_time, t_stats *stats);
 double			calculate_standard_deviation(t_stats stats);
 
 #endif

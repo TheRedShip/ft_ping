@@ -40,19 +40,19 @@ double	calculate_standard_deviation(t_stats stats)
 	return (sqrt(stats.mdev / (stats.recv - 1)));
 }
 
-void	update_stats(t_r_ping r_ping, double c_time, t_stats *stats)
+void	update_stats(int r_bytes, int response_code, double c_time, t_stats *stats)
 {
 	static double	mean = 0;
 
 	if (stats->sent == 0)
 		mean = 0;
 
-	if (r_ping.bytes < 0 || r_ping.icmp_head->icmp_type == ICMP_TIME_EXCEEDED)
+	if (r_bytes < 0 || response_code == ICMP_TIME_EXCEEDED)
 	{
 		stats->lost++;
 		return ;
 	}
-	else if (r_ping.icmp_head->icmp_type == ICMP_ECHOREPLY)
+	else if (response_code == ICMP_ECHOREPLY)
 	{
 		stats->recv++;
 		if (stats->min == 0 || c_time < stats->min)
