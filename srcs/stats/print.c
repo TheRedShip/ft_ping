@@ -22,7 +22,7 @@ void	show_response(t_argv av, t_r_ping r_ping, double time)
 		return ;
 
 	payload_size = r_ping.bytes - (r_ping.ip_head->ip_hl * 4);
-	if (r_ping.icmp_head->icmp_type == ICMP_ECHOREPLY)
+	if (r_ping.icmp_head->icmp_type == ICMP_ECHOREPLY && !av.quiet)
 		printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%0.3f ms\n", payload_size, inet_ntoa(r_ping.src_addr.sin_addr),
 														htons(r_ping.icmp_head->icmp_seq), r_ping.ip_head->ip_ttl, time);
 	else if (r_ping.icmp_head->icmp_type == ICMP_TIME_EXCEEDED)
@@ -42,6 +42,9 @@ void	show_response(t_argv av, t_r_ping r_ping, double time)
 
 void	show_stats(t_host host, t_stats stats)
 {
+	if (stats.sent == 0)
+		stats.sent++;
+
 	printf("--- %s ft_ping statistics ---\n", host.host);
 	printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
 			stats.sent, stats.recv, 100 - (100 * stats.recv / stats.sent));

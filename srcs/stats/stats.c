@@ -12,17 +12,6 @@
 
 #include "ft_ping.h"
 
-void	init_stats(t_stats *stats)
-{
-	stats->sent = 0;
-	stats->recv = 0;
-	stats->lost = 0;
-	stats->mdev = 0;
-	stats->min = 0;
-	stats->max = 0;
-	stats->avg = 0;
-}
-
 void	update_standard_deviation(double c_time, t_stats *stats, double *mean)
 {
 	double	delta;

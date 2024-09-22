@@ -25,6 +25,7 @@ t_argv	parse_argv(int argc, char **argv)
 	av.preload = DEFAULT_PRELOAD;
 	av.interval = DEFAULT_INTERVAL;
 	av.payload_size = DEFAULT_PAYLOAD_SIZE;
+	av.quiet = false;
 	av.force = false;
 	av.no_route = false;
 	av.reverse_dns = true;
@@ -51,6 +52,8 @@ t_argv	parse_argv(int argc, char **argv)
 			av.tos = ft_atoi(argv[i + 1]);
 		else if (ft_strncmp(argv[i], "--ip-timestamp", 14) == 0)
 			av.ip_timestamp = ft_strncmp(argv[i + 1], "tsonly", 6) == 0 ? 1 : 0;
+		else if (ft_strncmp(argv[i], "-q", 2) == 0)
+			av.quiet = true;
 		else if (ft_strncmp(argv[i], "-f", 2) == 0)
 			av.force = true;
 		else if (ft_strncmp(argv[i], "-n", 2) == 0)
@@ -62,4 +65,38 @@ t_argv	parse_argv(int argc, char **argv)
 	}
 
 	return (av);
+}
+
+bool	verify_parsing_value(t_argv av)
+{
+	if (av.ttl < 1 || av.payload_size < 0 || av.count < 0 || av.wait < 0 || av.interval < 0 || av.preload < 0)
+	{
+		ft_printf("ft_ping: option value too small.\n");
+		return (false);
+	}
+	if (av.ttl > 255 || av.payload_size > MAX_PAYLOAD_SIZE || av.tos > 255)
+	{
+		ft_printf("ft_ping: option value too big.\n");
+		return (false);
+	}
+
+	return (true);
+}
+
+bool	verify_parsing(int argc, char **argv)
+{
+	int	i;
+
+	i = 1;
+	while (i < argc)
+	{
+		if (is_param_value(argv[i]) && i + 1 >= argc)
+		{
+			ft_printf("%s: option requires an argument %s\n", argv[0], argv[i]);
+			return (false);
+		}
+		i++;
+	}
+
+	return (true);
 }

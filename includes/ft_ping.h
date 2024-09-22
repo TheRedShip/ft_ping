@@ -51,6 +51,7 @@ typedef struct	s_argv
 	int		interval;
 	int		payload_size;
 	int		ip_timestamp;
+	bool	quiet;
 	bool	force;
 	bool	no_route;
 	bool	reverse_dns;
@@ -91,7 +92,8 @@ typedef struct	s_r_ping
 // PARSING //
 
 t_argv			parse_argv(int argc, char **argv);
-
+bool			verify_parsing(int argc, char **argv);
+bool			verify_parsing_value(t_argv av);
 
 // SOCKETS //
 
@@ -115,7 +117,6 @@ bool			is_param_value(char *param);
 void			show_response(t_argv av, t_r_ping r_ping, double time);
 void			show_stats(t_host host, t_stats stats);
 
-void			init_stats(t_stats *stats);
 void			update_stats(int r_bytes, int response_code, double c_time, t_stats *stats);
 double			calculate_standard_deviation(t_stats stats);
 

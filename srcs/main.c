@@ -30,7 +30,8 @@ void	ping(t_host host, t_argv av)
 	int				response_code;
 
 	printf("PING %s (%s): %d data bytes\n", host.host, host.rhost, av.payload_size);
-	init_stats(&stats);
+	memset(&stats, 0, sizeof(t_stats));
+	memset(&r_ping, 0, sizeof(t_r_ping));
 
 	seq = 0;
 	do
@@ -46,9 +47,10 @@ void	ping(t_host host, t_argv av)
 		s_time = get_time();
 		send_ping(host, av, seq);
 
-		stats.sent++;
 		if (interrupted)
 			break;
+
+		stats.sent++;
 
 		r_ping = receive_ping(host);
 		c_time = get_time() - s_time;
@@ -72,10 +74,18 @@ int main(int argc, char **argv)
 	t_argv	av;
 	t_host	host;
 
+	memset(&av, 0, sizeof(t_argv));
+	memset(&host, 0, sizeof(t_host));
 	signal(SIGINT, int_handler);
 	
-	av = parse_argv(argc, argv);
+	if (!verify_parsing(argc, argv))
+		ft_exit_message("Try '%s -h' for more information.", argv[0]);
 	
+	av = parse_argv(argc, argv);
+
+	if (!verify_parsing_value(av))
+		return (1);
+
 	i = 1;
 	while (i < argc)
 	{
@@ -97,5 +107,9 @@ int main(int argc, char **argv)
 			i++;
 		i++;
 	}
+
+	if (host.host == NULL)
+		ft_exit_message("%s: missing host operand\nTry '%s -h' for more information.", argv[0], argv[0]);
+
 	return (0);
 }
