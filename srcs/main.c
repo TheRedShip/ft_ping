@@ -59,7 +59,9 @@ void	ping(t_host host, t_argv av)
 		
 		if (!av.force)
 			show_response(av, r_ping, c_time);
-
+		
+		free(r_ping.ip_head);
+		
 		update_stats(r_ping.bytes, response_code, c_time, &stats);
 		seq++;
 	}

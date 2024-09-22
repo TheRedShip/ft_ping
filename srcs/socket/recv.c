@@ -15,10 +15,14 @@
 t_r_ping	receive_ping(t_host host)
 {
 	t_r_ping	r_ping;
-	char		buf[4096];
+	char		*buf;
 	socklen_t	src_addr_len = sizeof(struct sockaddr_in);
 
-	r_ping.bytes = recvfrom(host.sockfd, buf, sizeof(buf), 0, (struct sockaddr *)&r_ping.src_addr, &src_addr_len);
+	buf = ft_calloc(1, 4096);
+	if (!buf)
+		ft_exit_message("ft_ping: %s\n", strerror(errno));
+
+	r_ping.bytes = recvfrom(host.sockfd, buf, 4096, 0, (struct sockaddr *)&r_ping.src_addr, &src_addr_len);
 	if (r_ping.bytes < 0)
 		return (r_ping);
 
