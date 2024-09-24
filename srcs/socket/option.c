@@ -50,6 +50,7 @@ void	set_option(t_argv av, int sockfd)
 		tv_out.tv_sec = 0;
 		tv_out.tv_usec = 1000 * 10;
 	}
+
 	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
 
 	setsockopt(sockfd, SOL_SOCKET, SO_DONTROUTE, &route_opt, sizeof(route_opt));

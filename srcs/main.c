@@ -51,9 +51,13 @@ void	ping(t_host host, t_argv av)
 			break;
 
 		stats.sent++;
+		seq++;
 
 		r_ping = receive_ping(host);
 		c_time = get_time() - s_time;
+
+		if (r_ping.bytes < 0)
+			continue ;
 
 		response_code = r_ping.icmp_head->icmp_type;
 		
@@ -63,7 +67,6 @@ void	ping(t_host host, t_argv av)
 		free(r_ping.ip_head);
 		
 		update_stats(r_ping.bytes, response_code, c_time, &stats);
-		seq++;
 	}
 	while (!interrupted && (seq < av.count || av.count == 0));
 

@@ -26,6 +26,8 @@ void	update_standard_deviation(double c_time, t_stats *stats, double *mean)
 
 double	calculate_standard_deviation(t_stats stats)
 {
+	if (stats.recv == 1)
+		return (0);
 	return (sqrt(stats.mdev / (stats.recv - 1)));
 }
 
