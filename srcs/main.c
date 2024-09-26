@@ -29,7 +29,11 @@ void	ping(t_host host, t_argv av)
 	t_r_ping		r_ping;
 	int				response_code;
 
-	printf("PING %s (%s): %d data bytes\n", host.host, host.rhost, av.payload_size);
+	printf("PING %s (%s): %d data bytes", host.host, host.rhost, av.payload_size);
+	if (av.verbose)
+		printf(", id 0x%04x = %d\n", getpid(), getpid());
+	printf("\n");
+
 	memset(&stats, 0, sizeof(t_stats));
 	memset(&r_ping, 0, sizeof(t_r_ping));
 

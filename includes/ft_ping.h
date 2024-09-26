@@ -39,8 +39,6 @@
 # define DEFAULT_PAYLOAD_SIZE 56
 # define MAX_PAYLOAD_SIZE 9999
 
-// extern bool	interrupted;
-
 typedef struct	s_argv
 {
 	int		tos;
@@ -53,6 +51,7 @@ typedef struct	s_argv
 	int		ip_timestamp;
 	bool	quiet;
 	bool	force;
+	bool	verbose;
 	bool	no_route;
 	bool	reverse_dns;
 }				t_argv;

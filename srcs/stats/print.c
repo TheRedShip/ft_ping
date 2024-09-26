@@ -12,6 +12,43 @@
 
 #include "ft_ping.h"
 
+void print_hex_dump(const unsigned char *buf, int size)
+{
+    int i;
+    for (i = 0; i < size; i++) {
+        printf("%02x", buf[i]);
+		if (i % 2 == 1)
+			printf(" ");
+    }
+    printf("\n");
+}
+
+void print_ip_header(struct ip *ip)
+{
+    printf("IP Hdr Dump:\n ");
+    print_hex_dump((unsigned char *)ip, ip->ip_hl * 4);
+    printf("Vr HL TOS  Len   ID Flg  off TTL Pro  cks      Src      Dst     Data\n");
+    printf(" %1x  %1x  %02x %04x %04x   %1x %04x  %02x  %02x %04x ",
+           ip->ip_v, ip->ip_hl, ip->ip_tos, ntohs(ip->ip_len), ntohs(ip->ip_id),
+           ntohs(ip->ip_off) >> 13, ntohs(ip->ip_off) & 0x1FFF, ip->ip_ttl, ip->ip_p, ntohs(ip->ip_sum));
+    printf("%s  ", inet_ntoa(ip->ip_src));
+    printf("%s\n", inet_ntoa(ip->ip_dst));
+}
+
+void print_icmp_packet(struct icmp *icmp, int size)
+{
+    printf("ICMP: type %d, code %d, size %d, id 0x%04x, seq 0x%04x\n",
+           icmp->icmp_type, icmp->icmp_code, size,
+           ntohs(icmp->icmp_id), htons(icmp->icmp_seq));
+}
+
+void	print_verbose_error(t_r_ping r_ping)
+{
+	print_ip_header(r_ping.ip_head);
+    print_icmp_packet(r_ping.icmp_head, r_ping.bytes - (r_ping.ip_head->ip_hl * 4));
+	printf("\n");
+}
+
 void	show_response(t_argv av, t_r_ping r_ping, double time)
 {
 	char	*host;
@@ -37,6 +74,8 @@ void	show_response(t_argv av, t_r_ping r_ping, double time)
 		}
 		else
 			printf("%d bytes from %s: Time to live exceeded\n", payload_size, host);
+
+		print_verbose_error(r_ping);
 	}
 }
 
