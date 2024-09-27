@@ -32,6 +32,8 @@
 
 # include "libft.h"
 
+# define HELP_MESSAGE "Usage: ft_ping [OPTION...] HOST ...\nSend ICMP ECHO_REQUEST packets to network hosts.\n\n Options valid:\n\n  -c\t\t\tstop after sending NUMBER packets\n  -i\t\t\twait NUMBER seconds between sending each packet\n  -n\t\t\tdo not resolve host addresses\n  -r\t\t\tsend directly to a host on an attached network\n  --ttl\t\t\tspecify N as time-to-live\n  -T\t\t\tset type of service (TOS) to NUM\n  -v\t\t\tverbose output\n  -W\t\t\tnumber of seconds to wait for response\n  -f\t\t\tflood ping\n  --ip-timestamp\tIP timestamp of type FLAG, which is one of\n\t\t\t\"tsonly\" and \"tsaddr\"\n  -l\t\t\tsend NUMBER packets as fast as possible before\n\t\t\tfalling into normal mode of behavior\n  -s\t\t\tsend NUMBER data octets\n\n  -?\t\t\tgive this help list\n\nMandatory or optional arguments to long options are also mandatory or optional\nfor any corresponding short options.\n\n"
+
 # define DEFAULT_TTL 64
 # define DEFAULT_WAIT 10
 # define DEFAULT_PRELOAD 0
@@ -49,6 +51,7 @@ typedef struct	s_argv
 	int		interval;
 	int		payload_size;
 	int		ip_timestamp;
+	bool	help;
 	bool	quiet;
 	bool	force;
 	bool	verbose;

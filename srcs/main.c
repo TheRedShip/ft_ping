@@ -22,7 +22,6 @@ void int_handler(int sig)
 
 void	ping(t_host host, t_argv av)
 {
-	int				seq;
 	t_stats			stats;
 	double			s_time;
 	double			c_time;
@@ -37,10 +36,9 @@ void	ping(t_host host, t_argv av)
 	memset(&stats, 0, sizeof(t_stats));
 	memset(&r_ping, 0, sizeof(t_r_ping));
 
-	seq = 0;
 	do
 	{
-		if (!av.force && seq && !av.preload)
+		if (!av.force && stats.sent && !av.preload)
 			sleep(av.interval);
 		else
 			usleep(1000 * 3);
@@ -49,13 +47,12 @@ void	ping(t_host host, t_argv av)
 			av.preload--;
 		
 		s_time = get_time();
-		send_ping(host, av, seq);
+		send_ping(host, av, stats.sent);
 
 		if (interrupted)
 			break;
 
 		stats.sent++;
-		seq++;
 
 		r_ping = receive_ping(host);
 		c_time = get_time() - s_time;
@@ -69,10 +66,9 @@ void	ping(t_host host, t_argv av)
 			show_response(av, r_ping, c_time);
 		
 		free(r_ping.ip_head);
-		
 		update_stats(r_ping.bytes, response_code, c_time, &stats);
 	}
-	while (!interrupted && (seq < av.count || av.count == 0));
+	while (!interrupted && (stats.sent < av.count || av.count == 0));
 
 	show_stats(host, stats);
 }
@@ -88,9 +84,11 @@ int main(int argc, char **argv)
 	signal(SIGINT, int_handler);
 	
 	if (!verify_parsing(argc, argv))
-		ft_exit_message("Try '%s -h' for more information.", argv[0]);
+		ft_exit_message("Try '%s -?' for more information.", argv[0]);
 	
 	av = parse_argv(argc, argv);
+	if (av.help)
+		ft_exit_message(HELP_MESSAGE, argv[0]);
 
 	if (!verify_parsing_value(av))
 		return (1);
@@ -118,7 +116,7 @@ int main(int argc, char **argv)
 	}
 
 	if (host.host == NULL)
-		ft_exit_message("%s: missing host operand\nTry '%s -h' for more information.", argv[0], argv[0]);
+		ft_exit_message("%s: missing host operand\nTry '%s -?' for more information.", argv[0], argv[0]);
 
 	return (0);
 }

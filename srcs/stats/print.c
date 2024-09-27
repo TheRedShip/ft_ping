@@ -74,8 +74,9 @@ void	show_response(t_argv av, t_r_ping r_ping, double time)
 		}
 		else
 			printf("%d bytes from %s: Time to live exceeded\n", payload_size, host);
-
-		print_verbose_error(r_ping);
+		
+		if (av.verbose)
+			print_verbose_error(r_ping);
 	}
 }
 

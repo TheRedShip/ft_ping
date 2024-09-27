@@ -25,6 +25,7 @@ t_argv	parse_argv(int argc, char **argv)
 	av.preload = DEFAULT_PRELOAD;
 	av.interval = DEFAULT_INTERVAL;
 	av.payload_size = DEFAULT_PAYLOAD_SIZE;
+	av.help = false;
 	av.quiet = false;
 	av.force = false;
 	av.verbose = false;
@@ -53,16 +54,18 @@ t_argv	parse_argv(int argc, char **argv)
 			av.tos = ft_atoi(argv[i + 1]);
 		else if (ft_strncmp(argv[i], "--ip-timestamp", 14) == 0)
 			av.ip_timestamp = ft_strncmp(argv[i + 1], "tsonly", 6) == 0 ? 1 : 0;
+		else if (ft_strncmp(argv[i], "-?", 2) == 0)
+			av.help = true;
 		else if (ft_strncmp(argv[i], "-q", 2) == 0)
 			av.quiet = true;
 		else if (ft_strncmp(argv[i], "-f", 2) == 0)
 			av.force = true;
-		else if (ft_strncmp(argv[i], "-n", 2) == 0)
-			av.reverse_dns = false;
-		else if (ft_strncmp(argv[i], "-r", 2) == 0)
-			av.no_route = true;
 		else if (ft_strncmp(argv[i], "-v", 2) == 0)
 			av.verbose = true;
+		else if (ft_strncmp(argv[i], "-r", 2) == 0)
+			av.no_route = true;
+		else if (ft_strncmp(argv[i], "-n", 2) == 0)
+			av.reverse_dns = false;
 
 		i++;
 	}
