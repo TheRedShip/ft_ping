@@ -75,7 +75,7 @@ t_argv	parse_argv(int argc, char **argv)
 
 bool	verify_parsing_value(t_argv av)
 {
-	if (av.ttl < 1 || av.payload_size < 0 || av.count < 0 || av.wait < 0 || av.interval < 0 || av.preload < 0 || av.tos < 0)
+	if (av.ttl < 1 || av.payload_size < 0 || av.count < 0 || av.wait <= 0 || av.interval < 0 || av.preload < 0 || av.tos < 0)
 	{
 		ft_printf("ft_ping: option value too small.\n");
 		return (false);
