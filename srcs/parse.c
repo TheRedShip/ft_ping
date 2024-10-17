@@ -19,7 +19,6 @@ t_argv	parse_argv(int argc, char **argv)
 
 	av.tos = 0;
 	av.count = 0;
-	av.ip_timestamp = -1;
 	av.ttl = DEFAULT_TTL;
 	av.wait = DEFAULT_WAIT;
 	av.preload = DEFAULT_PRELOAD;
@@ -52,8 +51,6 @@ t_argv	parse_argv(int argc, char **argv)
 			av.preload = ft_atoi(argv[i + 1]);
 		else if (ft_strncmp(argv[i], "-T", 2) == 0)
 			av.tos = ft_atoi(argv[i + 1]);
-		else if (ft_strncmp(argv[i], "--ip-timestamp", 14) == 0)
-			av.ip_timestamp = ft_strncmp(argv[i + 1], "tsonly", 6) == 0 ? 1 : 0;
 		else if (ft_strncmp(argv[i], "-?", 2) == 0)
 			av.help = true;
 		else if (ft_strncmp(argv[i], "-q", 2) == 0)
@@ -75,7 +72,7 @@ t_argv	parse_argv(int argc, char **argv)
 
 bool	verify_parsing_value(t_argv av)
 {
-	if (av.ttl < 1 || av.payload_size < 0 || av.count < 0 || av.wait <= 0 || av.interval < 0 || av.preload < 0 || av.tos < 0)
+	if (av.ttl <= 0 || av.payload_size <= 0 || av.count < 0 || av.wait < 0 || av.interval <= 0 || av.preload < 0 || av.tos < 0)
 	{
 		ft_printf("ft_ping: option value too small.\n");
 		return (false);
